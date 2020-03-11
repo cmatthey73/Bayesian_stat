@@ -1,0 +1,90 @@
+---
+title: "Bayesian Statistics"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Bayesian Statistics
+
+## Probability
+
+* Complement : P(Ac) = 1−P(A)
+* P(A union B) = P(A) + P(B) − P(A inter B)
+* If A mutually exclusive : p(union Ai) = sum(p(Ai))
+* Odds = p(A) / (1-p(A))
+* Expectation : E(X)=sum(xi*p(X=xi))
+* Classical framework : outcomes that are equally likely have equal probabilities => works really well when we have equally likely outcomes or well-defined equally likely outcomes. That's very difficult to apply in any of these other cases.
+* Frequentist framework : requires us to have a hypothetical infinite sequence of events, and then we look at the relevant frequency, in that hypothetical infinite sequence => works great when we can define a hypothetical infinite sequence. But then we can ask other questions, and they become more complicated under this approach.For example, what is the probability that it rains tomorrow? In this case, we need to think about hypothetical infinite sequence of tomorrow, and see what fraction of these infinite possible tomorrows have rain, which is a bit strange to think about.
+* Bayesian probability : your probability represents your own perspective, it's your measure of uncertainty, and it takes into account what you know about a particular problem => inherently a subjective approach to probability, but it can work well in a mathematically rigorous foundation, and it leads to much more intuitive results in many cases than the Frequentist approach
+
+## Bayes’ theorem
+
+### Conditional probability
+
+* p(A | B) = p(A inter B) / p(B)
+* Independance : 
+    + p(A | B) = p(A) 
+    + p(A inter B) = p(A)*p(B)
+* If p(A | B) <> p(A) => A and B not independant ! 
+
+### Bayes’ theorem
+
+* Bayes' Theorem is used to reverse the direction of conditioning. Suppose we want to ask what's the P(A|B) but we know it in terms of P(B|A). So we can write the P(A|B) = P(B|A) P(A) / P(B) = P(B|A) P(A) / P(B|A) P(A) + P(B| not A) P(not A) This does work out back to be the same as the P(A and B) / P(B)
+* Used if not all info to compute directly p(A inter B) / p(B)
+* Results sometimes surprising, e.g. rare diseases => even with accurate tests, false positives > true positives
+* Example :
+    + p(+|HIV) = 0.977
+    + p(-|noHIV) = 0.926
+    + p(HIV) = 0.0026
+* This obviously has important policy implications for things like mandatory testing. It makes much more sense to test in a sub population where the prevalence of HIV is higher, rather than in a general population where it's quite rare
+* To conclude, Bayes' Theorem is an important part of our approach to Bayesian statistics. We can use it to update our information. We start with prior beliefs, we'll collect data, we'll then condition on the data to lead to our posterior beliefs. Bayes' Theorem is the coherent way to do this updating
+
+```{r hiv}
+p_pos_HIV<- 0.977
+p_neg_noHIV<-0.926
+p_HIV<- 0.0026
+
+p_HIV_pos<-(p_pos_HIV*p_HIV)/(p_pos_HIV*p_HIV+(1-p_neg_noHIV)*(1-p_HIV))
+print(proba)
+p_HIV_pos
+
+```
+
+## Review of distributions
+
+### Bernoulli and binomial distributions
+
+* Bernoulli distribution : used when we have two possible outcomes, such as flipping a coin
+* The generalization of the Bernoulli when we have n repeated trials is a binomial.Binomial is just the sum of the N independent Bernoullis. We can say X follows a binomial distribution with parameters n and p
+
+### Uniform distribution
+
+### Exponential and normal distributions
+
+
+
+```{r tests, eval=F}
+## Quizz 2
+# titanic
+s<-203+118+178+212
+d<-122+167+528+673
+
+(203+122)/(s+d)
+s/(s+d)
+(203/(s+d))/((203+122)/(s+d))
+
+# marbles
+pblue<-1/3*3/5+1/3*1/6+1/3*0
+3/5*1/3/pblue
+
+pred<-1-pblue
+1*1/3/pred
+
+## Quizz 3
+4*3*2*1/(3*2*1)
+0.2*1+0.2*2+0.1*3
+(1-0.2)**3
+```
