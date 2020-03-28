@@ -42,7 +42,7 @@ knitr::opts_chunk$set(echo = TRUE)
 * This obviously has important policy implications for things like mandatory testing. It makes much more sense to test in a sub population where the prevalence of HIV is higher, rather than in a general population where it's quite rare
 * To conclude, Bayes' Theorem is an important part of our approach to Bayesian statistics. We can use it to update our information. We start with prior beliefs, we'll collect data, we'll then condition on the data to lead to our posterior beliefs. Bayes' Theorem is the coherent way to do this updating
 
-```{r hiv}
+```{r hiv, eval=F}
 p_pos_HIV<- 0.977
 p_neg_noHIV<-0.926
 p_HIV<- 0.0026
@@ -62,11 +62,15 @@ p_HIV_pos
 
 ### Uniform distribution
 
+* The PDF is sort of proportional to the probability that the random variable will take a particular value. In differential calculus sense because it can take an infinite number of possible values. The key idea is that if you integrate the PDF over an interval, it gives you the probability that the random variable would be in that interval
+* uniform (0,1) : f(x) = I{0<=x<=1} => proba = integrating f(x)
+* uniform (a,b) : f(x) = 1/(b-a) * I{a<=x<=b} 
+
 ### Exponential and normal distributions
 
+* Exponential distr : events that are occurring at a particular rate, and the exponential is the waiting time in between events. For example, you're waiting for a bus. The bus comes once every ten minutes. And then, the exponential is your waiting time. This is particularly true for events coming from a poisson process
 
-
-```{r tests, eval=F}
+```{r distrib, eval=F}
 ## Quizz 2
 # titanic
 s<-203+118+178+212
@@ -87,4 +91,69 @@ pred<-1-pblue
 4*3*2*1/(3*2*1)
 0.2*1+0.2*2+0.1*3
 (1-0.2)**3
+
+## Quizz honor
+lambda<-3
+x<-0.3
+1-(1-exp(-lambda*x))
+34+2*(-5-1*(-2))
 ```
+
+
+# Statistical Inference
+
+## Frequentist inference
+
+* Under the frequentist paradigm, you view the data as a random sample from some larger, potentially hypothetical population. We can then make probability statements i.e, long-run frequency statements based on this larger population
+
+### Confidence intervals
+
+* Under the frequentist paradigm, what this means is we have to think back to our infinite hypothetical sequence of events. So if we were to repeat this trial an infinite number of times, or an arbitrary large number of times.
+* Each time we create a confidence interval in this way based on the data we observe. Than on average 95% of the intervals we make will contain the true value of p
+* What's the probability that this interval contains a true p? Well, we don't know for this particular interval. But under the frequentist paradigm, we're assuming that there is a fixed right answer for p. Either p is in that interval or it's not in that interval. And so technically, from a frequentist perspective, the probability that p is in this interval is either 0 or 1. This is not a particularly satisfying explanation. In the other hand when we get to the Bayesian approach we will be able to compute an interval and actually say there is probably a p is in this interval is 95% based on a random interpretation of an unknown parameter
+
+### Likelihood function, max likelihood
+
+* The likelihood function is this density function thought of as a function of theta. This is not a probability distribution anymore, but it is still a function for theta.One way to estimate theta is that we choose the theta that gives us the largest value of the likelihood. It makes the data the most likely to occur for the particular data we observed.This is referred to as the maximum likelihood estimate, or MLE, maximum likelihood estimate.
+* In practice, it's usually easier to maximize the natural logarithm of the likelihood, referred to as the log likelihood.
+
+### Computing the MLE
+
+* Maximum likelihood estimators have many desirable mathematical properties. They're unbiased, they're consistent, and they're invariant.
+* In general, under certain regularity conditions, we can say that the MLE is approximately normally distributed with mean at the true value of theta and variance one over the Fisher information the value at theta hat. We'll return to the Fisher information later. The Fisher information is a measure of how much information about theta is in each data point.
+
+```{r freq_inf, eval=F}
+## Quizz 4
+theta<-47/100
+n<-100
+up<-theta+1.96*(theta*(1-theta)/n)**(1/2)
+low<-theta-1.96*(theta*(1-theta)/n)**(1/2)
+5/(2+2.5+4.1+1.8+4.0)
+mean(c(−1.2,0.5,0.8,−0.3))
+
+```
+```{r likelihood_fct}
+## fonction likelihood
+y<-72
+n<-400
+lik_fct<-function(n,y,theta){return(theta^y*(1-theta)^(n-y))}
+theta<-seq(from=0.01, to=0.99, by=0.01)
+plot(theta, lik_fct(n,y, theta))
+abline(v=y/n)
+
+
+```
+
+## Bayesian inference
+
+### Inference examples : frequentist, bayesian
+### Continuous version of Bayesian theorem
+### Posterior intervals
+
+
+
+
+
+
+
+
