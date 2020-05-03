@@ -4,7 +4,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 # Bayesian Statistics
@@ -132,8 +132,8 @@ low<-theta-1.96*(theta*(1-theta)/n)**(1/2)
 mean(c(−1.2,0.5,0.8,−0.3))
 
 ```
-```{r likelihood_fct}
-## fonction likelihood
+```{r likelihood_fct, echo=TRUE}
+## fonction likelihood (loi binomiale)
 y<-72
 n<-400
 lik_fct<-function(n,y,theta){return(theta^y*(1-theta)^(n-y))}
@@ -147,11 +147,79 @@ abline(v=y/n)
 ## Bayesian inference
 
 ### Inference examples : frequentist, bayesian
+
+* Maximum likelihood estimate : given the data, it is most likely that the coin is fair.
+* Question "how sure are you?" not easily answered in the frequentist paradigm. Another question is that we might like to know what is the probability that theta equals fair, given, we observed two heads
+* **Frequentist paradigm** : the coin is a physical quantity. It's a fixed coin, and therefore it has a fixed probability of coming up heads. It either is the fair coin, or it's the loaded coin (probability is either 0 or 1) => not a particularly satisfying answer. 
+* **Bayesian approache** : allows you to easily incorporate prior information, when you know something in advance of the looking at the data $$f(\theta|x)= \frac{f(x|\theta)f(\theta)}{\sum_{\theta} f(x|\theta)f(\theta)}$$ where ${\sum_{\theta} f(x|\theta)f(\theta)}=f(x)$ = normalizing constant, so that when we divide by this, we'll get answers that add up to one
+* **Bayesian approach is inherently subjective** but done in a mathematically vigorous framework, and it's all mathematically consistent and coherent.
+
+```{r quizz_5.1-5.2, echo=TRUE}
+
+# conservative vs liberal
+# ! succès = répondre non !
+0.5*dbinom(x = 0, size = 5, prob = 0.8)/(0.5*dbinom(x = 0, size = 5, prob = 0.8)+0.5*dbinom(x = 0, size = 5, prob = 0.3))
+0.5*dbinom(x = 0, size = 5, prob = 0.3)/(0.5*dbinom(x = 0, size = 5, prob = 0.8)+0.5*dbinom(x = 0, size = 5, prob = 0.3))
+
+# coin
+postprob<-function(t=c(1/2, 7/10, 3/10), prior=c(0.4, 0.3, 0.3),
+                   size=4, n=2){
+    
+         tmp<-vector()
+         for (i in 1:length(t)){
+             tmp[i]<-prior[i]*dbinom(x = n, size = size, prob = t[i])
+            }
+         return(tmp)
+     }
+
+a<-postprob(n=2)
+a/sum(a)
+
+```
+
 ### Continuous version of Bayesian theorem
+
+* Continuous version : $f(\theta|x)= \frac{f(x|\theta)f(\theta)}{\int_{\theta} f(x|\theta)f(\theta)d\theta}\propto f(x|\theta)f(\theta)$, proportionnal to the likelihood * prior (normalizing constant independant of $\theta$)
+
 ### Posterior intervals
 
+* HPD, Highest Posterior Density  = the shortest possible interval that contains the given probability, in this case a 95% probability
+* The posterior distribution describes our understanding of our uncertainty combining our prior beliefs and the data
+* In this case, we can legitimately say, the posterior probability Theta is bigger than .05, is .9975. Or, we believe there's a 95% probability the Theta is in between .158 and .987. Frequentest can't do this. Bayesians represent uncertainty with probabilities. So the coin itself is a physical quantity. It may have a particular value for Theta. It may be fixed, but because we don't know what that value is, we represent our uncertainty about that value with a distribution
+
+```{r eval=F, echo=F}
+
+qnorm(0.975)
+y<-10
+n<-25
+lik_fct<-function(n,y,theta){return(theta^y*(1-theta)^(n-y))}
+theta<-seq(from=0.01, to=0.99, by=0.01)
+plot(theta, lik_fct(n,y, theta))
+abline(v=y/n)
+
+(y/n)/(1-y/n)
+
+0.6/(1-0.6)
+
+0.6-(1-0.6)*0.6/(1-0.6)
+
+new_p<-0.7*0.6/(0.7*0.6+0.5*0.4)
+
+new_p/(1-new_p)
+
+```
 
 
+
+# Priors and Models for Discrete Data
+
+## Priors
+
+### Priors and prior predictive distributions
+
+### Bernoulli/binomial data
+
+### Poisson data
 
 
 

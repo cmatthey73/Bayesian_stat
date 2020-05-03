@@ -410,13 +410,6 @@ summary {
 <li>This obviously has important policy implications for things like mandatory testing. It makes much more sense to test in a sub population where the prevalence of HIV is higher, rather than in a general population where it’s quite rare</li>
 <li>To conclude, Bayes’ Theorem is an important part of our approach to Bayesian statistics. We can use it to update our information. We start with prior beliefs, we’ll collect data, we’ll then condition on the data to lead to our posterior beliefs. Bayes’ Theorem is the coherent way to do this updating</li>
 </ul>
-<pre class="r"><code>p_pos_HIV&lt;- 0.977
-p_neg_noHIV&lt;-0.926
-p_HIV&lt;- 0.0026
-
-p_HIV_pos&lt;-(p_pos_HIV*p_HIV)/(p_pos_HIV*p_HIV+(1-p_neg_noHIV)*(1-p_HIV))
-print(proba)
-p_HIV_pos</code></pre>
 </div>
 </div>
 <div id="review-of-distributions" class="section level2">
@@ -441,32 +434,6 @@ p_HIV_pos</code></pre>
 <ul>
 <li>Exponential distr : events that are occurring at a particular rate, and the exponential is the waiting time in between events. For example, you’re waiting for a bus. The bus comes once every ten minutes. And then, the exponential is your waiting time. This is particularly true for events coming from a poisson process</li>
 </ul>
-<pre class="r"><code>## Quizz 2
-# titanic
-s&lt;-203+118+178+212
-d&lt;-122+167+528+673
-
-(203+122)/(s+d)
-s/(s+d)
-(203/(s+d))/((203+122)/(s+d))
-
-# marbles
-pblue&lt;-1/3*3/5+1/3*1/6+1/3*0
-3/5*1/3/pblue
-
-pred&lt;-1-pblue
-1*1/3/pred
-
-## Quizz 3
-4*3*2*1/(3*2*1)
-0.2*1+0.2*2+0.1*3
-(1-0.2)**3
-
-## Quizz honor
-lambda&lt;-3
-x&lt;-0.3
-1-(1-exp(-lambda*x))
-34+2*(-5-1*(-2))</code></pre>
 </div>
 </div>
 </div>
@@ -498,14 +465,7 @@ x&lt;-0.3
 <li>Maximum likelihood estimators have many desirable mathematical properties. They’re unbiased, they’re consistent, and they’re invariant.</li>
 <li>In general, under certain regularity conditions, we can say that the MLE is approximately normally distributed with mean at the true value of theta and variance one over the Fisher information the value at theta hat. We’ll return to the Fisher information later. The Fisher information is a measure of how much information about theta is in each data point.</li>
 </ul>
-<pre class="r"><code>## Quizz 4
-theta&lt;-47/100
-n&lt;-100
-up&lt;-theta+1.96*(theta*(1-theta)/n)**(1/2)
-low&lt;-theta-1.96*(theta*(1-theta)/n)**(1/2)
-5/(2+2.5+4.1+1.8+4.0)
-mean(c(−1.2,0.5,0.8,−0.3))</code></pre>
-<pre class="r"><code>## Quizz 4
+<pre class="r"><code>## fonction likelihood (loi binomiale)
 y&lt;-72
 n&lt;-400
 lik_fct&lt;-function(n,y,theta){return(theta^y*(1-theta)^(n-y))}
@@ -519,14 +479,52 @@ abline(v=y/n)</code></pre>
 <h2>Bayesian inference</h2>
 <div id="inference-examples-frequentist-bayesian" class="section level3">
 <h3>Inference examples : frequentist, bayesian</h3>
+<ul>
+<li>Maximum likelihood estimate : given the data, it is most likely that the coin is fair.</li>
+<li>Question “how sure are you?” not easily answered in the frequentist paradigm. Another question is that we might like to know what is the probability that theta equals fair, given, we observed two heads</li>
+<li><strong>Frequentist paradigm</strong> : the coin is a physical quantity. It’s a fixed coin, and therefore it has a fixed probability of coming up heads. It either is the fair coin, or it’s the loaded coin (probability is either 0 or 1) =&gt; not a particularly satisfying answer.</li>
+<li><strong>Bayesian approache</strong> : allows you to easily incorporate prior information, when you know something in advance of the looking at the data <span class="math display">\[f(\theta|x)= \frac{f(x|\theta)f(\theta)}{\sum_{\theta} f(x|\theta)f(\theta)}\]</span> where <span class="math inline">\({\sum_{\theta} f(x|\theta)f(\theta)}=f(x)\)</span> = normalizing constant, so that when we divide by this, we’ll get answers that add up to one</li>
+<li><strong>Bayesian approach is inherently subjective</strong> but done in a mathematically vigorous framework, and it’s all mathematically consistent and coherent.</li>
+</ul>
+<pre class="r"><code># conservative vs liberal
+# ! succès = répondre non !
+0.5*dbinom(x = 0, size = 5, prob = 0.8)/(0.5*dbinom(x = 0, size = 5, prob = 0.8)+0.5*dbinom(x = 0, size = 5, prob = 0.3))</code></pre>
+<pre><code>## [1] 0.00190035</code></pre>
+<pre class="r"><code>0.5*dbinom(x = 0, size = 5, prob = 0.3)/(0.5*dbinom(x = 0, size = 5, prob = 0.8)+0.5*dbinom(x = 0, size = 5, prob = 0.3))</code></pre>
+<pre><code>## [1] 0.9980996</code></pre>
+<pre class="r"><code># coin
+postprob&lt;-function(t=c(1/2, 7/10, 3/10), prior=c(0.4, 0.3, 0.3),
+                   size=4, n=2){
+    
+         tmp&lt;-vector()
+         for (i in 1:length(t)){
+             tmp[i]&lt;-prior[i]*dbinom(x = n, size = size, prob = t[i])
+            }
+         return(tmp)
+     }
+
+a&lt;-postprob(n=2)
+a/sum(a)</code></pre>
+<pre><code>## [1] 0.4858142 0.2570929 0.2570929</code></pre>
 </div>
 <div id="continuous-version-of-bayesian-theorem" class="section level3">
 <h3>Continuous version of Bayesian theorem</h3>
+<ul>
+<li>Continuous version : <span class="math inline">\(f(\theta|x)= \frac{f(x|\theta)f(\theta)}{\int_{\theta} f(x|\theta)f(\theta)d\theta}\propto f(x|\theta)f(\theta)\)</span>, proportionnal to the likelihood * prior (normalizing constant independant of <span class="math inline">\(\theta\)</span>)</li>
+</ul>
 </div>
 <div id="posterior-intervals" class="section level3">
 <h3>Posterior intervals</h3>
+<ul>
+<li>HPD, Highest Posterior Density = the shortest possible interval that contains the given probability, in this case a 95% probability</li>
+<li>The posterior distribution describes our understanding of our uncertainty combining our prior beliefs and the data</li>
+<li>In this case, we can legitimately say, the posterior probability Theta is bigger than .05, is .9975. Or, we believe there’s a 95% probability the Theta is in between .158 and .987. Frequentest can’t do this. Bayesians represent uncertainty with probabilities. So the coin itself is a physical quantity. It may have a particular value for Theta. It may be fixed, but because we don’t know what that value is, we represent our uncertainty about that value with a distribution</li>
+</ul>
 </div>
 </div>
+</div>
+<div id="priors-and-models-for-discrete-data" class="section level1">
+<h1>Priors and Models for Discrete Data</h1>
 </div>
 
 
