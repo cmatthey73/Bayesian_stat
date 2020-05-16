@@ -483,7 +483,7 @@ abline(v=y/n)</code></pre>
 <li>Maximum likelihood estimate : given the data, it is most likely that the coin is fair.</li>
 <li>Question “how sure are you?” not easily answered in the frequentist paradigm. Another question is that we might like to know what is the probability that theta equals fair, given, we observed two heads</li>
 <li><strong>Frequentist paradigm</strong> : the coin is a physical quantity. It’s a fixed coin, and therefore it has a fixed probability of coming up heads. It either is the fair coin, or it’s the loaded coin (probability is either 0 or 1) =&gt; not a particularly satisfying answer.</li>
-<li><strong>Bayesian approache</strong> : allows you to easily incorporate prior information, when you know something in advance of the looking at the data <span class="math display">\[f(\theta|x)= \frac{f(x|\theta)f(\theta)}{\sum_{\theta} f(x|\theta)f(\theta)}\]</span> where <span class="math inline">\({\sum_{\theta} f(x|\theta)f(\theta)}=f(x)\)</span> = normalizing constant, so that when we divide by this, we’ll get answers that add up to one</li>
+<li><strong>Bayesian approache</strong> : allows you to easily incorporate prior information, when you know something in advance of the looking at the data <span class="math inline">\(f(\theta|x)= \frac{f(x|\theta)f(\theta)}{\sum_{\theta} f(x|\theta)f(\theta)}\)</span> where <span class="math inline">\({\sum_{\theta} f(x|\theta)f(\theta)}=f(x)\)</span> = normalizing constant, so that when we divide by this, we’ll get answers that add up to one</li>
 <li><strong>Bayesian approach is inherently subjective</strong> but done in a mathematically vigorous framework, and it’s all mathematically consistent and coherent.</li>
 </ul>
 <pre class="r"><code># conservative vs liberal
@@ -525,6 +525,48 @@ a/sum(a)</code></pre>
 </div>
 <div id="priors-and-models-for-discrete-data" class="section level1">
 <h1>Priors and Models for Discrete Data</h1>
+<div id="priors" class="section level2">
+<h2>Priors</h2>
+<div id="priors-and-prior-predictive-distributions" class="section level3">
+<h3>Priors and prior predictive distributions</h3>
+<ul>
+<li>Our prior needs to represent our personal perspective, our beliefs, and our uncertainties. Theoretically we’re defining a cumulative distribution function for the parameter. So in particular we’re defining probability that theta is lesser or equal to some value of c for all possible c on the real line.</li>
+<li>Generally if one has enough data, the information in the data will overwhelm the invasion of prior. And so it, prior is not particularly important in terms of what you get for the posterior. Any reasonable choice of prior will lead to approximately the same posterior. However, there are some things that can go wrong</li>
+<li><strong>So in the bayesian context, events with prior probability of zero have posterior probability of zero, events with prior probability of one, have posterior probability of one regardless of the data</strong>. Thus a good bayesian will not assign probability of zero or one to any event that has already occurred or already known not to occur</li>
+<li>Prior predictive intervals are useful because they reveal the consequences of the prior at the data (observation) level. The prior predictive distribution is <span class="math inline">\(f(y) = \int{f(y|\theta)f(\theta)d\theta} = \int{f(y, \theta)d\theta}\)</span></li>
+</ul>
+</div>
+<div id="prior-predictive-binomial-example" class="section level3">
+<h3>Prior predictive : binomial example</h3>
+<ul>
+<li>if we start with a uniform prior, we then end up with a discrete uniform predictive density for X. If all possible coins or all possible probabilities are equally likely, then all possible X outcomes are equally likely</li>
+</ul>
+</div>
+<div id="posterior-predictive-distribution" class="section level3">
+<h3>Posterior predictive distribution</h3>
+<ul>
+<li>What about after we’ve observed data? What’s our posterior predictive distribution?</li>
+<li>Prior vs posterior predictive distribution : they are the same procedure, except in one case you use the prior for <span class="math inline">\(\theta\)</span> and in the other case you use the posterior for <span class="math inline">\(\theta\)</span> : <span class="math inline">\(\theta|y\)</span></li>
+<li>The posterior predictive distribution is <span class="math inline">\(f(y2|y1) = \int{f(y2|\theta,y1)f(\theta|y1)d\theta}\)</span>. If y2 and y1 independant : <span class="math inline">\(f(y2|y1) = \int{f(y2|\theta)f(\theta|y1)d\theta}\)</span>.</li>
+</ul>
+</div>
+</div>
+<div id="bernoullibinomial-data" class="section level2">
+<h2>Bernoulli/binomial data</h2>
+<ul>
+<li>When we use a uniform prior for a Bernoulli likelihood (<span class="math inline">\(\theta\)</span>), we get a beta posterior. Thus we see the posterior for <span class="math inline">\(\theta|y\)</span> follows a beta distribution with parameters <span class="math inline">\(\sum{y_{i}}+1\)</span>, and <span class="math inline">\(n-\sum{y_{i}}+1\)</span>. NB : prior = <span class="math inline">\(f(\theta)\)</span>, posterior = <span class="math inline">\(f(\theta|y)\)</span><br />
+</li>
+<li>the uniform distribution, is a beta one one. Any beta distribution, is conjugate for the Bernoulli distribution. Any beta prior, will give a beta posterior. If prior follows a beta distribution with parameters <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>, posterior follows beta distribution with parameters <span class="math inline">\(\sum{y_{i}}+\alpha\)</span>, and <span class="math inline">\(n-\sum{y_{i}}+\beta\)</span></li>
+<li>This whole concept of starting with the beta prior and getting a beta posterior is a really convenient one. A family of distributions is referred to as conjugate if when you use a member of that family as a prior, you get another member of that family as your posterior. The beta distribution is conjugate for the Bernoulli distribution. It’s also conjugate for the binomial distribution</li>
+<li>We often use conjugate priors because they make life much more simpler. If the family is flexible enough, then you can find a member of that family that closely enough represents your beliefs. We can represent this model as a hierarchy.</li>
+</ul>
+<div id="posterior-mean-effective-sample-size" class="section level3">
+<h3>Posterior mean, effective sample size</h3>
+</div>
+</div>
+<div id="poisson-data" class="section level2">
+<h2>Poisson data</h2>
+</div>
 </div>
 
 

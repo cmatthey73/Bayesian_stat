@@ -151,7 +151,7 @@ abline(v=y/n)
 * Maximum likelihood estimate : given the data, it is most likely that the coin is fair.
 * Question "how sure are you?" not easily answered in the frequentist paradigm. Another question is that we might like to know what is the probability that theta equals fair, given, we observed two heads
 * **Frequentist paradigm** : the coin is a physical quantity. It's a fixed coin, and therefore it has a fixed probability of coming up heads. It either is the fair coin, or it's the loaded coin (probability is either 0 or 1) => not a particularly satisfying answer. 
-* **Bayesian approache** : allows you to easily incorporate prior information, when you know something in advance of the looking at the data $$f(\theta|x)= \frac{f(x|\theta)f(\theta)}{\sum_{\theta} f(x|\theta)f(\theta)}$$ where ${\sum_{\theta} f(x|\theta)f(\theta)}=f(x)$ = normalizing constant, so that when we divide by this, we'll get answers that add up to one
+* **Bayesian approache** : allows you to easily incorporate prior information, when you know something in advance of the looking at the data $f(\theta|x)= \frac{f(x|\theta)f(\theta)}{\sum_{\theta} f(x|\theta)f(\theta)}$ where ${\sum_{\theta} f(x|\theta)f(\theta)}=f(x)$ = normalizing constant, so that when we divide by this, we'll get answers that add up to one
 * **Bayesian approach is inherently subjective** but done in a mathematically vigorous framework, and it's all mathematically consistent and coherent.
 
 ```{r quizz_5.1-5.2, echo=TRUE}
@@ -207,19 +207,44 @@ new_p<-0.7*0.6/(0.7*0.6+0.5*0.4)
 
 new_p/(1-new_p)
 
-```
+factorial(5)
 
+```
 
 
 # Priors and Models for Discrete Data
 
 ## Priors
 
-### Priors and prior predictive distributions
+### Priors and posterior predictive distributions
 
-### Bernoulli/binomial data
+* Our prior needs to represent our personal perspective, our beliefs, and our uncertainties. Theoretically we're defining a cumulative distribution function for the parameter. So in particular we're defining probability that theta is lesser or equal to some value of c for all possible c on the real line.
+* Generally if one has enough data, the information in the data will overwhelm the invasion of prior. And so it, prior is not particularly important in terms of what you get for the posterior. Any reasonable choice of prior will lead to approximately the same posterior. However, there are some things that can go wrong
+* **So in the bayesian context, events with prior probability of zero have posterior probability of zero, events with prior probability of one, have posterior probability of one regardless of the data**. Thus a good bayesian will not assign probability of zero or one to any event that has already occurred or already known not to occur
+* Prior predictive intervals are useful because they reveal the consequences of the prior at the data (observation) level. The prior predictive distribution is $f(y) = \int{f(y|\theta)f(\theta)d\theta} = \int{f(y, \theta)d\theta}$
 
-### Poisson data
+### Prior predictive : binomial example
+
+* if we start with a uniform prior, we then end up with a discrete uniform predictive density for X. If all possible coins or all possible probabilities are equally likely, then all possible X outcomes are equally likely
+
+### Posterior predictive distribution
+
+* What about after we've observed data? What's our posterior predictive distribution?
+* Prior vs posterior predictive distribution : they are the same procedure, except in one case you use the prior for $\theta$ and in the other case you use the posterior for $\theta$ : $\theta|y$
+* The posterior predictive distribution is $f(y2|y1) = \int{f(y2|\theta,y1)f(\theta|y1)d\theta}$. If y2 and y1 independant :  $f(y2|y1) = \int{f(y2|\theta)f(\theta|y1)d\theta}$.
+
+## Bernoulli/binomial data
+
+* When we use a uniform prior for a Bernoulli likelihood ($\theta$), we get a beta posterior. Thus we see the posterior for $\theta|y$ follows a beta distribution with parameters $\sum{y_{i}}+1$, and $n-\sum{y_{i}}+1$. NB : prior = $f(\theta)$, posterior = $f(\theta|y)$  
+* the uniform distribution, is a beta one one. Any beta distribution, is conjugate for the Bernoulli distribution. Any beta prior, will give a beta posterior. If prior follows a beta distribution with parameters $\alpha$ and $\beta$, posterior follows beta distribution with parameters $\sum{y_{i}}+\alpha$, and $n-\sum{y_{i}}+\beta$
+* This whole concept of starting with the beta prior and getting a beta posterior is a really convenient one. A family of distributions is referred to as conjugate if when you use a member of that family as a prior, you get another member of that family as your posterior. The beta distribution is conjugate for the Bernoulli distribution. It's also conjugate for the binomial distribution
+* We often use conjugate priors because they make life much more simpler. If the family is flexible enough, then you can find a member of that family that closely enough represents your beliefs. We can represent this model as a hierarchy.
+
+### Posterior mean, effective sample size
+
+
+
+## Poisson data
 
 
 
