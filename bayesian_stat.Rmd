@@ -242,11 +242,145 @@ factorial(5)
 
 ### Posterior mean, effective sample size
 
+* Prior : effective sample size = $\alpha+\beta$, mean= $\frac{\alpha}{\alpha+\beta}$
+* Posterior mean = $\frac{\sum{y_{i}}+\alpha}{n-\sum{y_{i}}+\beta+\sum{y_{i}}+\alpha}=\frac{\alpha+\beta}{\alpha+\beta+n}\cdot\frac{\alpha}{\alpha+\beta}+\frac{n}{\alpha+\beta+n}\cdot\frac{\sum{y_{i}}}{n}$ = prior_wgt * prior_mean + data_wgt*data_mean => which n so that prior not too much weight !
+* Sequential analysis : use previous posterior as new prior ! E.g. medical device testing => small samples after each adaptation
 
+```{r echo=F, results="hide"}
+
+# Suppose we are giving two students a multiple-choice exam with 40 questions, 
+# where each question has four choices. We don't know how much the students
+# have studied for this exam, but we think that they will do better than just
+# guessing randomly. 
+# 1) What are the parameters of interest?
+# 2) What is our likelihood?
+# 3) What prior should we use?
+# 4) What is the prior probability P(theta>.25)? P(theta>.5)? P(theta>.8)?
+# 5) Suppose the first student gets 33 questions right. What is the posterior
+#    distribution for theta1? P(theta1>.25)? P(theta1>.5)? P(theta1>.8)?
+#    What is a 95% posterior credible interval for theta1?
+# 6) Suppose the second student gets 24 questions right. What is the posterior
+#    distribution for theta2? P(theta2>.25)? P(theta2>.5)? P(theta2>.8)?
+#    What is a 95% posterior credible interval for theta2?
+# 7) What is the posterior probability that theta1>theta2, i.e., that the 
+#    first student has a better chance of getting a question right than
+#    the second student?
+
+############
+# Solutions:
+
+# 1) Parameters of interest are theta1=true probability the first student
+#    will answer a question correctly, and theta2=true probability the second
+#    student will answer a question correctly.
+
+# 2) Likelihood is Binomial(40, theta), if we assume that each question is 
+#    independent and that the probability a student gets each question right 
+#    is the same for all questions for that student.
+
+# 3) The conjugate prior is a beta prior. Plot the density with dbeta.
+theta=seq(from=0,to=1,by=.01)
+plot(theta,dbeta(theta,1,1),type="l")
+plot(theta,dbeta(theta,4,2),type="l")
+plot(theta,dbeta(theta,8,4),type="l")
+
+# 4) Find probabilities using the pbeta function.
+1-pbeta(.25,8,4)
+1-pbeta(.5,8,4)
+1-pbeta(.8,8,4)
+
+# 5) Posterior is Beta(8+33,4+40-33) = Beta(41,11)
+41/(41+11)  # posterior mean
+33/40       # MLE
+
+lines(theta,dbeta(theta,41,11))
+
+# plot posterior first to get the right scale on the y-axis
+plot(theta,dbeta(theta,41,11),type="l")
+lines(theta,dbeta(theta,8,4),lty=2)
+# plot likelihood
+lines(theta,dbinom(33,size=40,p=theta),lty=3)
+# plot scaled likelihood
+lines(theta,44*dbinom(33,size=40,p=theta),lty=3)
+
+# posterior probabilities
+1-pbeta(.25,41,11)
+1-pbeta(.5,41,11)
+1-pbeta(.8,41,11)
+
+# equal-tailed 95% credible interval
+qbeta(.025,41,11)
+qbeta(.975,41,11)
+
+# 6) Posterior is Beta(8+24,4+40-24) = Beta(32,20)
+32/(32+20)  # posterior mean
+24/40       # MLE
+
+plot(theta,dbeta(theta,32,20),type="l")
+lines(theta,dbeta(theta,8,4),lty=2)
+lines(theta,44*dbinom(24,size=40,p=theta),lty=3)
+
+1-pbeta(.25,32,20)
+1-pbeta(.5,32,20)
+1-pbeta(.8,32,20)
+
+qbeta(.025,32,20)
+qbeta(.975,32,20)
+
+# 7) Estimate by simulation: draw 1,000 samples from each and see how often 
+#    we observe theta1>theta2
+
+theta1=rbeta(1000,41,11)
+theta2=rbeta(1000,32,20)
+mean(theta1>theta2)
+
+
+# Note for other distributions:
+# dgamma,pgamma,qgamma,rgamma
+# dnorm,pnorm,qnorm,rnorm
+```
+
+```{r echo=F, results="hide"}
+1/6
+s<-dbeta(seq(0,1, by=0.05),1,5)
+plot(s)
+1/(4+1+5)
+pbeta(0.5, 1, 5)
+qbeta(0.975, 8, 16)
+pbeta(0.35, 8, 16)
+pbeta(0.35, 8, 21)
+
+
+```
 
 ## Poisson data
 
+* If y follows poisson distribution, likelihood sample y=y1,..yi,..= $f(y| \lambda)=\frac{\lambda^{\sum{y_{i}}}e^{-n\lambda}}{\prod_{i}y_{i}!}$, for $\lambda > 0$
+* prior $f(\lambda)$ = gamma distribution $\Gamma(\alpha, \beta)$
+* posterior = gamma distribution $\Gamma(\alpha+\sum{y_{i}}, \beta+n)$
+* prior mean= $\frac{\alpha}{\beta}$
+* posterior mean= $\frac{\beta}{\beta+n}\cdot\frac{\alpha}{\beta}+\frac{n}{\beta+n}\cdot\frac{\sum{y_{i}}}{n}$
+* how to define $\alpha$ and $\beta$ ?
+    + strategy 1 : idea on the prior mean (how many counts per period) => $\frac{\alpha}{\beta}$ **AND**
+        + idea on std of prior mean => $\frac{\sqrt\alpha}{\beta}$ **OR**
+        + effective sample size = $\beta$
+    + strategy 2 : vague prior $\Gamma(\epsilon, \epsilon)$ with $\epsilon$ small
+        
+ ```{r echo=F, results="hide"}
 
+mean<-8
+beta<-1
+beta*mean
 
+9+12+10+15+13
 
+plot(dgamma(1:20, 67,6), type="l")
+lines(dgamma(1:20, 8,1))
+
+67/6
+
+qgamma(0.05, 67, 6)
+
+plot(dbeta(seq(0,1,length=20),2,2))
+
+```      
 
