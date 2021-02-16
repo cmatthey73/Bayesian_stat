@@ -384,3 +384,158 @@ plot(dbeta(seq(0,1,length=20),2,2))
 
 ```      
 
+# Priors and Models for Continuous Data
+
+## Exponential data
+
+* It turns out, the gamma distribution is conjugate for an exponential likelihood. Gammas actually are conjugate for a number of different things.
+* Prior $f(\lambda)$ = gamma distribution $\Gamma(\alpha, \beta)$
+* Prior effective sample size : $\alpha$
+* Posterior : $\Gamma(\alpha+n, \beta+\sum{y_{i}})$
+* If y follows exponential distribution, likelihood sample y=y1,..yi,..= $f(y| \lambda) = \lambda^{n}e^{-\lambda\sum{y_{i}}}$, for $\lambda > 0$
+
+```{r echo=F, results="hide"}
+
+sqrt(1/16)/(1/5)
+alpha=1+5
+beta=20+(12+15+8+13.5+25)
+alpha/beta
+
+pgamma(1/10, alpha, beta)
+
+alpha=1+8
+beta=30++16+8+114+60+4+23+30+105
+qgamma(0.975, alpha, beta)
+y<-1:120
+plot((beta**alpha*alpha)/((beta+y)**(alpha+1)))
+```
+
+## Normal data A REVOIR ....
+
+## Variance known (mean unkn.)
+
+* Prior, posterior = normal ! Normal conjugates for normal
+* Prior pour $\mu$ suit une loi normale N($m_{0}$, $s_{0}^2$)
+* Posterior pour $\mu$ : N(..., ....)
+* Posterior mean = wgt mean of prior mean and mean data
+* Effective sample size = variance data / variance prior
+
+## Variance unknown (mean unkn.)
+
+* Prior pour $\mu$ conditionné à $\sigma$, $\mu|\sigma$ suit une loi normale N(m, $\sigma^2/w$)
+* w = $\sigma^2/\sigma^2_{\mu}$, effective sample size
+* Prior pour $\sigma$ : $\Gamma^{-1}(\alpha, \beta)$
+* Posterior pour $\sigma|y$ : $\Gamma^{-1}(\alpha+n/2, \beta+....)$
+* Posterior pour $\mu|\sigma,y$ : N(..., ....)
+* Posterior pour $\mu|y$ : t distribution
+* Posterior predictive distribution : t distribution
+
+```{r echo=F, results="hide"}
+
+data<-c(94.6, 95.4, 96.2, 94.9, 95.9)
+munew<-(length(data)*mean(data)+100)/(length(data)+1)
+varnew<-1/(length(data)/0.25+1/0.25)
+qnorm(0.975, munew, sqrt(varnew))
+pnorm(100, munew, sqrt(varnew))
+
+munew<-(length(data)*mean(data)+0.25/var(data)*100)/(length(data)+0.25/var(data))
+varnew<-1/(length(data)/0.25+1/var(data))
+
+z <- rgamma(n=1000, shape=3, rate=200)
+x <- 1/z
+boxplot(x)
+mean(x)
+
+z <- rgamma(1000, shape=16.5, rate=6022.9)
+sig2 <- 1/z
+mu <- rnorm(1000, mean=609.3, sd=sqrt(sig2/27.1))
+boxplot(mu)
+quantile(x=mu, probs=c(0.025, 0.975))
+
+m0<-500
+n<-27
+w<-0.1
+a0<-3
+b0<-200
+n1<-27
+y1<-609.7
+s1<-401.8
+
+a1<-a0+n1/2
+b1<-b0+s1*(n1-1)/2+(w*n1/(2*(w+n1)))*(y1-m0)**2
+m1<-(n1*y1+w*m0)/(w+n1)
+
+z <- rgamma(1000, shape=a1, rate=b1)
+sig2 <- 1/z
+mu1 <- rnorm(1000, mean=m1, sd=sqrt(sig2/(w+n1)))
+boxplot(mu1)
+quantile(x=mu1, probs=c(0.025, 0.975))
+
+m0<-500
+n<-30
+w<-0.1
+a0<-3
+b0<-200
+n1<-27
+y1<-622.8
+s1<-403.1
+
+a1<-a0+n1/2
+b1<-b0+s1*(n1-1)/2+(w*n1/(2*(w+n1)))*(y1-m0)**2
+m1<-(n1*y1+w*m0)/(w+n1)
+
+z <- rgamma(1000, shape=a1, rate=b1)
+sig2 <- 1/z
+mu2 <- rnorm(1000, mean=m1, sd=sqrt(sig2/(w+n1)))
+boxplot(mu2)
+quantile(x=mu2, probs=c(0.025, 0.975))
+sum(mu2 > mu1 ) / 1000
+
+```
+
+## Alternative priors
+
+### Non-informative priors
+
+* Objective Bayesian statistics => min amount of info into prior, max influence of data => non-informative priors
+* Uniform(0,1) not a non-informative prior for a Bernoulli distribution, same as beta(1,1,) => effective sample size = 2, same as data with 1 tail and 1 head
+* Improper priors (integrals infinite and not 1) OK if give proper posteriors (depends on the data) => examples of non-informative priors
+* Non-informative priors lead to same point estimates as frequentist values BUT with a distribution around it !
+
+### Jeffreys priors
+
+* Jeffreys prior $\propto\sqrt{I(\theta)}$, $I(\theta)$ = Fisher information
+* Jeffreys prior pas modifié si $\theta$ tranformé (p.ex. $\theta$ => log($\theta$))
+* Other possible approaches to objective basing inference include priors such as reference priors and maximum entropy priors
+
+```{r echo=F, results="hide"}
+
+mean(c(94.6, 95.4, 96.2, 94.9, 95.9))
+
+a<-dbeta(seq(0, 1, by=0.05), 0.5,0.5)
+# plot(a)
+
+```
+
+
+## Linear regression
+
+
+```{r echo=F, results="hide"}
+
+a<-read.table(file = "./golf.txt", header=F)
+colnames(a)<-c("dist", "accuracy", "female")
+
+plot(a$dist, a$accuracy, col=a$female)
+mod<-lm(data=subset(a, female==1), formula = accuracy~dist+1)
+summary(mod)
+predict(mod, data.frame(dist=260))
+predict(mod,data.frame(dist=260),interval="predict") 
+
+```
+
+
+
+
+
+
